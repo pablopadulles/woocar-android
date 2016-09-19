@@ -1,14 +1,17 @@
 package com.padulles.pablo.woocar_android;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         messageTextView1 = (TextView) findViewById(R.id.textview1);
+    }
+
+    public void clickButtonRecorrido(View v) {
+        comenzarLocalizacion();
     }
 
     private void comenzarLocalizacion() {
@@ -45,8 +52,17 @@ public class MainActivity extends AppCompatActivity {
 
         //actualiza la posicion
         locListener = new LocationListener() {
+            private PollSQLiteHelper con;
+
             public void onLocationChanged(Location location) {
                 mostrarPosicion(location);
+                con = new PollSQLiteHelper(MainActivity.this, "PosicionGPS", null, 1);
+                SQLiteDatabase db = con.getWritableDatabase();
+                ContentValues nuevoRegistro = new ContentValues();
+                nuevoRegistro.put("latitude", String.valueOf(location.getLongitude()));
+                nuevoRegistro.put("longitude", String.valueOf(location.getAccuracy()));
+                nuevoRegistro.put("speed", String.valueOf(location.getSpeed()));
+                db.insert("posiciones", null, nuevoRegistro);
             }
 
             public void onProviderDisabled(String provider) {
@@ -69,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
 
         messageTextView1.setText("GPS: \n" + String.valueOf(loc.getLatitude()) + "\n" +
                 String.valueOf(loc.getLongitude()) + "\n" +
-                String.valueOf(loc.getAccuracy()));
+                String.valueOf(loc.getAccuracy()) + "\n" +
+                String.valueOf(loc.getSpeed()));
 
     }
 }
