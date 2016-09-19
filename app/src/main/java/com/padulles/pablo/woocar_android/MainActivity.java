@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        messageTextView1 = (TextView) findViewById(R.id.textview1)
+        messageTextView1 = (TextView) findViewById(R.id.textview1);
     }
 
     private void comenzarLocalizacion() {
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
         messageTextView1.setText("GPS: \n" + String.valueOf(loc.getLatitude()) + "\n" +
                 String.valueOf(loc.getLongitude()) + "\n" +
                 String.valueOf(loc.getAccuracy()));
-
 
     }
 }
