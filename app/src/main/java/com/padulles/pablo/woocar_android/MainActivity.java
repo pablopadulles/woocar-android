@@ -34,21 +34,11 @@ public class MainActivity extends AppCompatActivity {
         //Obtenemos una referencia al LocationManager
         locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 20000, 0, locListener);
-
         //Obtenemos la última posición conocida
         //Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        //Mostramos la última posición conocida
+        //mostrarPosicion(loc);
 
         //actualiza la posicion
         locListener = new LocationListener() {
@@ -56,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
             public void onLocationChanged(Location location) {
                 mostrarPosicion(location);
+
                 con = new PollSQLiteHelper(MainActivity.this, "PosicionGPS", null, 1);
                 SQLiteDatabase db = con.getWritableDatabase();
                 ContentValues nuevoRegistro = new ContentValues();
@@ -63,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 nuevoRegistro.put("longitude", String.valueOf(location.getAccuracy()));
                 nuevoRegistro.put("speed", String.valueOf(location.getSpeed()));
                 db.insert("posiciones", null, nuevoRegistro);
+                
             }
 
             public void onProviderDisabled(String provider) {
@@ -77,12 +69,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
-
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 20000, 0, locListener);
     }
 
     private void mostrarPosicion(Location loc) {
-
         messageTextView1.setText("GPS: \n" + String.valueOf(loc.getLatitude()) + "\n" +
                 String.valueOf(loc.getLongitude()) + "\n" +
                 String.valueOf(loc.getAccuracy()) + "\n" +

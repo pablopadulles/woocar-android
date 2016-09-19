@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Woocar-Android</string>
+    <string name="button">Empezar Seguimiento</string>
+    <string name="button2">Enviar Datos</string>
 </resources>
